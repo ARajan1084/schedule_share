@@ -1,12 +1,16 @@
 {% load static %}
 <body>
-    <form action="">
+    <h1>Log In:</h1>
+    <form method="POST">
         {% csrf_token %}
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
         <label for="">Username:</label>
-        <input type="text">
+        {{ form.username }}
         <label for="">Password:</label>
-        <input type="text">
-        <button>Login</button>
-        <button>Create Account</button>
+        {{ form.password }}
+        <button type="submit">Login</button>
     </form>
+    <button onclick="location.href='{% url 'create_account' %}'">Create Account</button>
 </body>

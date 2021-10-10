@@ -1,0 +1,23 @@
+{% load static %}
+<body>
+    <h1>Create Account: </h1>
+    <form method="POST">
+        {% csrf_token %}
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+        <label for="">First Name:</label>
+        {{ form.first_name }}
+        <label for="">Last Name:</label>
+        {{ form.last_name }}
+        <label for="">Email:</label>
+        {{ form.email }}
+        <label for="">Username:</label>
+        {{ form.username }}
+        <label for="">Password:</label>
+        {{ form.password }}
+        <label for="">Confirm Password:</label>
+        {{ form.confirm_password }}
+        <button>Create Your Account</button>
+    </form>
+</body>
