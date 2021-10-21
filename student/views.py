@@ -8,7 +8,15 @@ from student.models import Student
 
 
 def home(request):
+    # fetch friendships, and friend requests
+    # process request, and create any friend requests
+    # fetch friend requests, process accepting and declining
     return render(request, 'student/home.html')
+
+
+def add_class(request):
+
+    return
 
 
 def login(request):
