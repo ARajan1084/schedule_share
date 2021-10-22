@@ -1,22 +1,64 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate
 from django.shortcuts import render, redirect
-from student.forms import UserLoginForm
+from student.forms import UserLoginForm, AddClassForm
 from student.forms import CreateAccountForm
 from django.contrib.auth.models import User
-from student.models import Student
+from student.models import Student, FriendRequest, Friendship, Class, Enrollment
 
 
 def home(request):
+    user = request.user
+    if user is None:
+        return redirect('login')
+    # student = Student.objects.all().get(user=user)
+    friend_requests = FriendRequest.objects.all().filter(receiving_student=user.username)
+    friendships = fetch_friendships(user.username)
+    if request.method == 'POST':
+        if request.POST == 'add_class':
+            add_class(...)
+
     # fetch friendships, and friend requests
     # process request, and create any friend requests
     # fetch friend requests, process accepting and declining
     return render(request, 'student/home.html')
 
 
-def add_class(request):
+def fetch_friendships(username):
+    friends = []
+    for friendship in Friendship.objects.all().filter(first_student_username=username):
+        friends.append(friendship.second_student_username)
+    for friendship in Friendship.objects.all().filter(second_student_username=username):
+        friends.append(friendship.first_student_username)
+    return friends
 
-    return
+
+def add_class(request):
+    if request.method == 'POST':
+        form = AddClassForm(request.POST)
+        if form.is_valid():
+            course_name = form.cleaned_data.get('course_name')
+            teacher_first_name = form.cleaned_data.get('teacher_first_name')
+            teacher_last_name = form.cleaned_data.get('teacher_last_name')
+            day = form.cleaned_data.get('day')
+            start_time = form.cleaned_data.get('start_time')
+            end_time = form.cleaned_data.get('end_time')
+            existing_classes = Class.objects.all()
+
+            for existing_klass in existing_classes:
+                if existing_klass.course_name == course_name and teacher_first_name == existing_klass.teacher_first_name and teacher_last_name == existing_klass.teacher_last_name and day == existing_klass.day and start_time == existing_klass.start_time and end_time == existing_klass.end_time:
+                    enrollment = Enrollment(username=request.user.username, class_id=existing_klass.id)
+                    enrollment.save()
+                    return redirect('home')
+            klass = Class(course_name=course_name, teacher_first_name=teacher_first_name,
+                          teacher_last_name=teacher_last_name,
+                          day=day, start_time=start_time, end_time=end_time)
+            enrollment = Enrollment(username=request.user.username, class_id=klass.id)
+            klass.save()
+            enrollment.save()
+        else:
+            messages.error(request, 'Form is Invalid')
+    return render(request, 'student/add_class.html', {'form': AddClassForm()})
 
 
 def login(request):
