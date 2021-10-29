@@ -1,7 +1,7 @@
 {% extends 'student/base.html' %}
 {% load static %}
 
-{% block title %}ScheduleShare Home{% endblock %}
+{% block title %}Home{% endblock %}
 
 {% block body %}
     <div class="container">
@@ -15,10 +15,20 @@
                 {% for friend in busy_friends %}
                 {% endfor %}
                 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias enim perspiciatis quasi quibusdam quidem? A aspernatur consectetur eum iure laborum laudantium neque non quaerat quam similique tempora unde, veniam veritatis!</p>
+                <h2 class="pt-3">Add Class</h2>
+
             </div>
             <div class="col-lg-4">
-                <h2>Send FR</h2>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias aliquid at consequuntur doloremque doloribus dolorum ea eum excepturi facilis inventore iusto laborum maxime minus neque quam, quis sequi, temporibus veniam.</p>
+                <h2>Send Request</h2>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="form-group row">
+                            <label class="" for="username">Username: </label>
+                            <input type="text">
+                            <button class="btn btn-primary">+</button>
+                        </div>
+                    </div>
+                </div>
                 <h2 class="pt-3">Friend Requests</h2>
                 {% for request in friend_requests %}
                 {% endfor %}
