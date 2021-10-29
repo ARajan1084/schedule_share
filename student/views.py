@@ -14,9 +14,9 @@ def home(request):
     # student = Student.objects.all().get(user=user)
     friend_requests = FriendRequest.objects.all().filter(receiving_student=user.username)
     friendships = fetch_friendships(user.username)
-    if request.method == 'POST':
-        if request.POST == 'add_class':
-            add_class(...)
+    # if request.method == 'POST':
+    #     if request.POST == 'add_class':
+    #         add_class(...)
 
     # fetch friendships, and friend requests
     # process request, and create any friend requests

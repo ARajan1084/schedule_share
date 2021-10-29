@@ -20,5 +20,6 @@ from student import views
 urlpatterns = [
     path('login/', views.login, name="login"),
     path('account/create/', views.create_account, name='create_account'),
+    path('class/management/add/', views.add_class(), name = 'add_class'),
     path('', views.home, name='home')
 ]
