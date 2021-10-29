@@ -8,24 +8,34 @@
         <div class="row pt-3">
             <div class="col-lg-8">
                 <h2>Available</h2>
-                {% for friend in available_friends %}
-                {% endfor %}
+                <table>
+                    {% for friend in available_friends %}
+                        <tr>
+                            <td>{{ friend.first_name }} {{ friend.last_name }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
                 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus aliquid, aperiam at aut deleniti dolores et, eum fuga, magnam maxime nam quisquam rem repellat saepe similique soluta unde vel voluptatibus.</p>
                 <h2 class="pt-3">Busy</h2>
-                {% for friend in busy_friends %}
-                {% endfor %}
+                <table>
+                    {% for friend in busy_friends %}
+                        <tr>
+                            <td>{{ friend.first_name }} {{ friend.last_name }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
                 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias enim perspiciatis quasi quibusdam quidem? A aspernatur consectetur eum iure laborum laudantium neque non quaerat quam similique tempora unde, veniam veritatis!</p>
-                <h2 class="pt-3">Add Class</h2>
-
             </div>
             <div class="col-lg-4">
                 <h2>Send Request</h2>
                 <div class="card">
                     <div class="card-body">
                         <div class="form-group row">
-                            <label class="" for="username">Username: </label>
-                            <input type="text">
-                            <button class="btn btn-primary">+</button>
+                            <form method="POST">
+                                <label class="" for="username">Username: </label>
+                                {{ friend_request_form.friend_username }}
+                                <button type="submit" class="btn btn-primary">+</button>
+                            </form>
                         </div>
                     </div>
                 </div>
