@@ -1,10 +1,11 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate
 from django.shortcuts import render, redirect
-from student.forms import UserLoginForm, AddClassForm
+from student.forms import UserLoginForm, AddClassForm, SendFriendRequestForm
 from student.forms import CreateAccountForm
 from django.contrib.auth.models import User
 from student.models import Student, FriendRequest, Friendship, Class, Enrollment
+import datetime
 
 
 def home(request):
@@ -21,7 +22,10 @@ def home(request):
     # fetch friendships, and friend requests
     # process request, and create any friend requests
     # fetch friend requests, process accepting and declining
-    return render(request, 'student/home.html')
+    return render(request, 'student/home.html', {'friendships': friendships, 'friend_request_form': SendFriendRequestForm()})
+
+
+# available_friends busy_friends
 
 
 def fetch_friendships(username):
@@ -31,6 +35,18 @@ def fetch_friendships(username):
     for friendship in Friendship.objects.all().filter(second_student_username=username):
         friends.append(friendship.first_student_username)
     return friends
+
+
+def all_availability_statuses(friendships):
+    busy = []
+    free = []
+    for friend in friendships:
+        # student = Student.objects.get(user=User.objects.get(username=friend))
+        # student.user.username
+        enrollment = Enrollment.objects.all().filter(username=friend)
+        klass = Class.objects.all().filter(id=enrollment.class_id)
+        
+        current_time = datetime.datetime.now()
 
 
 def add_class(request):
