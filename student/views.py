@@ -13,19 +13,21 @@ def home(request):
     if user is None:
         return redirect('login')
     # student = Student.objects.all().get(user=user)
-    friend_requests = FriendRequest.objects.all().filter(receiving_student=user.username)
+
+    unknown_friend_requests = FriendRequest.objects.all().filter(receiving_student=user.username, request_status='U')
     friendships = fetch_friendships(user.username)
-    # if request.method == 'POST':
-    #     if request.POST == 'add_class':
-    #         add_class(...)
+    statuses = all_availability_statuses(friendships)
+    available_friends = statuses[0]
+    busy_friends = statuses[1]
 
     # fetch friendships, and friend requests
     # process request, and create any friend requests
     # fetch friend requests, process accepting and declining
-    return render(request, 'student/home.html', {'friendships': friendships, 'friend_request_form': SendFriendRequestForm()})
-
-
-# available_friends busy_friends
+    return render(request, 'student/home.html', {'unkown_friend_requests': unknown_friend_requests,
+                                                 'friendships': friendships,
+                                                 'friend_request_form': SendFriendRequestForm(),
+                                                 'available_friends': available_friends,
+                                                 'busy_friends': busy_friends})
 
 
 def fetch_friendships(username):
@@ -38,15 +40,22 @@ def fetch_friendships(username):
 
 
 def all_availability_statuses(friendships):
+    current_time = datetime.datetime.now()
     busy = []
     free = []
     for friend in friendships:
-        # student = Student.objects.get(user=User.objects.get(username=friend))
-        # student.user.username
-        enrollment = Enrollment.objects.all().filter(username=friend)
-        klass = Class.objects.all().filter(id=enrollment.class_id)
-        
-        current_time = datetime.datetime.now()
+        student = Student.objects.get(user=User.objects.get(username=friend))
+        enrollments = Enrollment.objects.all().filter(username=friend)
+        klasses = Class.objects.all().filter(id=enrollments.class_id)
+        addedToBusy = False
+        for klass in klasses:
+            if klass.start_time < current_time < klass.end_time:
+                busy.append(student)
+                addedToBusy = True
+                break
+        if not addedToBusy:
+            free.append(student)
+    return busy, free
 
 
 def add_class(request):
