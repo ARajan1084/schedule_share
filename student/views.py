@@ -23,7 +23,7 @@ def home(request):
     # fetch friendships, and friend requests
     # process request, and create any friend requests
     # fetch friend requests, process accepting and declining
-    return render(request, 'student/home.html', {'unkown_friend_requests': unknown_friend_requests,
+    return render(request, 'student/home.html', {'unknown_friend_requests': unknown_friend_requests,
                                                  'friendships': friendships,
                                                  'friend_request_form': SendFriendRequestForm(),
                                                  'available_friends': available_friends,
@@ -46,7 +46,9 @@ def all_availability_statuses(friendships):
     for friend in friendships:
         student = Student.objects.get(user=User.objects.get(username=friend))
         enrollments = Enrollment.objects.all().filter(username=friend)
-        klasses = Class.objects.all().filter(id=enrollments.class_id)
+        klasses = []
+        for enrollment in enrollments:
+            klasses.append(Class.objects.all().filter(id=enrollment.class_id))
         added_to_busy = False
         for klass in klasses:
             if klass.start_time < current_time < klass.end_time:
@@ -84,6 +86,16 @@ def add_class(request):
         else:
             messages.error(request, 'Form is Invalid')
     return render(request, 'student/add_class.html', {'form': AddClassForm()})
+
+
+def remove_class(request):
+    # if request.method == 'POST':
+    #
+    enrollments = Enrollment.objects.all().filter(username=request.user.username)
+    klasses = []
+    for enrollment in enrollments:
+        klasses.append(Class.objects.all().filter(id=enrollment.class_id))
+    return render(request, 'student/remove_class.html', {'klasses': klasses})
 
 
 def login(request):
