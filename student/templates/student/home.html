@@ -8,23 +8,29 @@
         <div class="row pt-3">
             <div class="col-lg-8">
                 <h2>Available</h2>
-                <table>
-                    {% for friend in available_friends %}
-                        <tr>
-                            <td>{{ friend.first_name }} {{ friend.last_name }}</td>
-                        </tr>
-                    {% endfor %}
-                </table>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus aliquid, aperiam at aut deleniti dolores et, eum fuga, magnam maxime nam quisquam rem repellat saepe similique soluta unde vel voluptatibus.</p>
+                {% if available_friends %}
+                    <table>
+                        {% for friend in available_friends %}
+                            <tr>
+                                <td>{{ friend.first_name }} {{ friend.last_name }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                {% else %}
+                    <p class="alert alert-secondary">No Available Friends</p>
+                {% endif %}
                 <h2 class="pt-3">Busy</h2>
-                <table>
-                    {% for friend in busy_friends %}
-                        <tr>
-                            <td>{{ friend.first_name }} {{ friend.last_name }}</td>
-                        </tr>
-                    {% endfor %}
-                </table>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias enim perspiciatis quasi quibusdam quidem? A aspernatur consectetur eum iure laborum laudantium neque non quaerat quam similique tempora unde, veniam veritatis!</p>
+                {% if busy_friends %}
+                    <table>
+                        {% for friend in busy_friends %}
+                            <tr>
+                                <td>{{ friend.first_name }} {{ friend.last_name }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                {% else %}
+                    <p class="alert alert-secondary">No Busy Friends</p>
+                {% endif %}
             </div>
             <div class="col-lg-4">
                 <h2>Send Request</h2>
@@ -40,9 +46,17 @@
                     </div>
                 </div>
                 <h2 class="pt-3">Friend Requests</h2>
-                {% for request in friend_requests %}
-                {% endfor %}
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Asperiores cupiditate doloribus ea impedit necessitatibus quidem sint velit veritatis! Consectetur dignissimos distinctio dolores enim laudantium minus neque nostrum qui vel voluptate.</p>
+                {% if unkown_friend_requests %}
+                    <table class="table">
+                        {% for request in unkown_friend_requests %}
+                            <td>
+                                <tr>request.username</tr>
+                            </td>
+                        {% endfor %}
+                    </table>
+                {% else %}
+                    <p class="alert alert-secondary">No Friend Requests</p>
+                {% endif %}
             </div>
         </div>
     </div>

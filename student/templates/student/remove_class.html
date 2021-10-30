@@ -5,13 +5,13 @@
 
 {% block form %}
     <table class="table table-striped">
-        {% for class in classes %}
+        {% for klass in klasses %}
             <tr>
-                <td>{{ class.course_name }}</td>
-                <td>{{ class.teacher_first_name }} {{ teacher.last_name }}</td>
-                <td>{{ class.day}}</td>
-                <td>{{ class.start_time }}</td>
-                <td>{{ class.end_time }}</td>
+                <td>{{ klass.course_name }}</td>
+                <td>{{ klass.teacher_first_name }} {{ teacher.last_name }}</td>
+                <td>{{ klass.day}}</td>
+                <td>{{ klass.start_time }}</td>
+                <td>{{ klass.end_time }}</td>
                 <td><button class="btn btn-danger">Remove</button></td>
             </tr>
         {% endfor %}
