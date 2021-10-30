@@ -23,6 +23,5 @@ class AddClassForm(forms.Form):
     start_time = forms.TimeField()
     end_time = forms.TimeField()
 
-
 class SendFriendRequestForm(forms.Form):
     friend_username = forms.CharField()
