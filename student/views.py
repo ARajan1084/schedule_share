@@ -1,6 +1,8 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate
 from django.shortcuts import render, redirect
+
+from student.decorators import authentication_required
 from student.forms import UserLoginForm, AddClassForm, SendFriendRequestForm
 from student.forms import CreateAccountForm
 from django.contrib.auth.models import User
@@ -8,6 +10,7 @@ from student.models import Student, FriendRequest, Friendship, Class, Enrollment
 import datetime
 
 
+@authentication_required
 def home(request):
     if request.user is None:
         return redirect('login')
@@ -16,19 +19,23 @@ def home(request):
         form = SendFriendRequestForm(request.POST)
         if form.is_valid():
             friend_username = form.cleaned_data.get('friend_username')
+            if request.user.username == friend_username:
+                messages.error(request, 'You cannot send friend requests to yourself')
             # friend = Student.objects.get(user=User.objects.get(username=friend_username))
             friend_does_exist = False
             for user in User.objects.all():
                 if user.username == friend_username:
                     friend_does_exist = True
             if friend_does_exist:
-                friend_request = FriendRequest(sending_student=request.user.username, receiving_student=friend_username, request_status='U')
+                friend_request = FriendRequest(sending_student=request.user.username, receiving_student=friend_username,
+                                               request_status='U')
                 friend_request.save()
             else:
                 messages.error(request, 'Friend does not exist')
         else:
             messages.error(request, 'Form is Invalid')
-    unknown_friend_requests = FriendRequest.objects.all().filter(receiving_student=request.user.username, request_status='U')
+    unknown_friend_requests = FriendRequest.objects.all().filter(receiving_student=request.user.username,
+                                                                 request_status='U')
     friendships = fetch_friendships(user.username)
     statuses = all_availability_statuses(friendships)
     available_friends = statuses[0]
@@ -70,7 +77,7 @@ def all_availability_statuses(friendships):
             free.append(student)
     return busy, free
 
-
+@authentication_required
 def add_class(request):
     if request.method == 'POST':
         form = AddClassForm(request.POST)
@@ -98,7 +105,7 @@ def add_class(request):
             messages.error(request, 'Form is Invalid')
     return render(request, 'student/add_class.html', {'form': AddClassForm()})
 
-
+@authentication_required
 def remove_class(request):
     # if request.method == 'POST':
     #
