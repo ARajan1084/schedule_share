@@ -16,27 +16,42 @@ def home(request):
         return redirect('login')
     # student = Student.objects.all().get(user=user)
     if request.method == 'POST':
-        form = SendFriendRequestForm(request.POST)
-        if form.is_valid():
-            friend_username = form.cleaned_data.get('friend_username')
-            if request.user.username == friend_username:
-                messages.error(request, 'You cannot send friend requests to yourself')
-            # friend = Student.objects.get(user=User.objects.get(username=friend_username))
-            friend_does_exist = False
-            for user in User.objects.all():
-                if user.username == friend_username:
-                    friend_does_exist = True
-            if friend_does_exist:
-                friend_request = FriendRequest(sending_student=request.user.username, receiving_student=friend_username,
-                                               request_status='U')
-                friend_request.save()
+        if 'send_friend_request' in request.POST:
+            form = SendFriendRequestForm(request.POST)
+            if form.is_valid():
+                friend_username = form.cleaned_data.get('friend_username')
+                if request.user.username == friend_username:
+                    messages.error(request, 'You cannot send friend requests to yourself')
+                # friend = Student.objects.get(user=User.objects.get(username=friend_username))
+                friend_does_exist = False
+                for user in User.objects.all():
+                    if user.username == friend_username:
+                        friend_does_exist = True
+                if friend_does_exist:
+                    friend_request = FriendRequest(sending_student=request.user.username, receiving_student=friend_username,
+                                                   request_status='U')
+                    friend_request.save()
+                else:
+                    messages.error(request, 'Friend does not exist')
             else:
-                messages.error(request, 'Friend does not exist')
-        else:
-            messages.error(request, 'Form is Invalid')
+                messages.error(request, 'Form is Invalid')
+        elif 'accept_fr' in request.POST:
+            friend_username = request.POST['accept_fr']
+            friendship = Friendship(first_student_username=request.user.username, second_student_username=friend_username)
+            friendship.save()
+            fr = FriendRequest.objects.all().get(sending_student=friend_username, receiving_student=request.user.username)
+            fr.request_status = 'A'
+            fr.save()
+            return redirect('home')
+        elif 'reject_fr' in request.POST:
+            friend_username = request.POST['reject_fr']
+            fr = FriendRequest.objects.all().get(sending_student=friend_username,
+                                                 receiving_student=request.user.username)
+            fr.request_status = 'R'
+            fr.save()
+            return redirect('home')
     unknown_friend_requests = FriendRequest.objects.all().filter(receiving_student=request.user.username,
                                                                  request_status='U')
-    print(unknown_friend_requests)
     friendships = fetch_friendships(request.user.username)
     statuses = all_availability_statuses(friendships)
     available_friends = statuses[0]
@@ -75,7 +90,8 @@ def all_availability_statuses(friendships):
                 break
         if not added_to_busy:
             free.append(student)
-    return busy, free
+    return free, busy
+
 
 @authentication_required
 def add_class(request):
@@ -104,6 +120,7 @@ def add_class(request):
         else:
             messages.error(request, 'Form is Invalid')
     return render(request, 'student/add_class.html', {'form': AddClassForm()})
+
 
 @authentication_required
 def remove_class(request):
