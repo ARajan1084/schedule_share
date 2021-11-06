@@ -9,25 +9,36 @@ import datetime
 
 
 def home(request):
-    user = request.user
-    if user is None:
+    if request.user is None:
         return redirect('login')
     # student = Student.objects.all().get(user=user)
-
-    unknown_friend_requests = FriendRequest.objects.all().filter(receiving_student=user.username, request_status='U')
+    if request.method == 'POST':
+        form = SendFriendRequestForm(request.POST)
+        if form.is_valid():
+            friend_username = form.cleaned_data.get('friend_username')
+            # friend = Student.objects.get(user=User.objects.get(username=friend_username))
+            friend_does_exist = False
+            for user in User.objects.all():
+                if user.username == friend_username:
+                    friend_does_exist = True
+            if friend_does_exist:
+                friend_request = FriendRequest(sending_student=request.user.username, receiving_student=friend_username, request_status='U')
+                friend_request.save()
+            else:
+                messages.error(request, 'Friend does not exist')
+        else:
+            messages.error(request, 'Form is Invalid')
+    unknown_friend_requests = FriendRequest.objects.all().filter(receiving_student=request.user.username, request_status='U')
     friendships = fetch_friendships(user.username)
     statuses = all_availability_statuses(friendships)
     available_friends = statuses[0]
     busy_friends = statuses[1]
-
-    # fetch friendships, and friend requests
-    # process request, and create any friend requests
-    # fetch friend requests, process accepting and declining
     return render(request, 'student/home.html', {'unknown_friend_requests': unknown_friend_requests,
                                                  'friendships': friendships,
                                                  'friend_request_form': SendFriendRequestForm(),
                                                  'available_friends': available_friends,
-                                                 'busy_friends': busy_friends})
+                                                 'busy_friends': busy_friends,
+                                                 'friend_request': friend_request})
 
 
 def fetch_friendships(username):
@@ -128,8 +139,11 @@ def create_account(request):
                 user = User(username=username, email=email)
                 user.set_password(password)
                 student = Student(user=user, first_name=first_name, last_name=last_name)
-                user.save()
-                student.save()
+                try:
+                    user.save()
+                    student.save()
+                except():
+                    return redirect('create_account')
                 return redirect('login')
             else:
                 messages.error(request, 'Passwords do not match')
