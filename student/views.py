@@ -1,5 +1,5 @@
 from django.contrib import messages
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.shortcuts import render, redirect
 
 from student.decorators import authentication_required
@@ -36,7 +36,8 @@ def home(request):
             messages.error(request, 'Form is Invalid')
     unknown_friend_requests = FriendRequest.objects.all().filter(receiving_student=request.user.username,
                                                                  request_status='U')
-    friendships = fetch_friendships(user.username)
+    print(unknown_friend_requests)
+    friendships = fetch_friendships(request.user.username)
     statuses = all_availability_statuses(friendships)
     available_friends = statuses[0]
     busy_friends = statuses[1]
@@ -44,8 +45,7 @@ def home(request):
                                                  'friendships': friendships,
                                                  'friend_request_form': SendFriendRequestForm(),
                                                  'available_friends': available_friends,
-                                                 'busy_friends': busy_friends,
-                                                 'friend_request': friend_request})
+                                                 'busy_friends': busy_friends})
 
 
 def fetch_friendships(username):
@@ -124,6 +124,7 @@ def login(request):
             password = form.cleaned_data.get('password')
             user = authenticate(username=username, password=password)
             if user is not None:
+                auth_login(request, user)
                 return redirect('home')
             else:
                 messages.error(request, 'Invalid Username or Password')
