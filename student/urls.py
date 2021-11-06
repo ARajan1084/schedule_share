@@ -21,6 +21,7 @@ urlpatterns = [
     path('login/', views.login, name="login"),
     path('account/create/', views.create_account, name='create_account'),
     path('class/management/add/', views.add_class, name='add_class'),
-    path('class/management/remove/', views.add_class, name='remove_class'),
+    path('class/management/remove/', views.remove_class, name='remove_class'),
+    path('class/management/remove/<str:klass_id>/', views.remove_class, name='remove_a_class'),
     path('', views.home, name='home')
 ]

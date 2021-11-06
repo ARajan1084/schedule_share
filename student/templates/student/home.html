@@ -38,6 +38,7 @@
                     <div class="card-body">
                         <div class="form-group row">
                             <form method="POST">
+                                {% csrf_token %}
                                 <label class="" for="username">Username: </label>
                                 {{ friend_request_form.friend_username }}
                                 <button type="submit" class="btn btn-primary">+</button>
@@ -49,9 +50,11 @@
                 {% if unkown_friend_requests %}
                     <table class="table">
                         {% for request in unkown_friend_requests %}
-                            <td>
-                                <tr>request.username</tr>
-                            </td>
+                            <tr>
+                                <td>request.username</td>
+                                <td><button class="btn btn-success">+</button></td>
+                                <td><button class="btn btn-danger">-</button></td>
+                            </tr>
                         {% endfor %}
                     </table>
                 {% else %}

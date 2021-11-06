@@ -4,16 +4,21 @@
 {% block title %}Remove Class{% endblock %}
 
 {% block form %}
+    <h1>Remove a Class</h1>
     <table class="table table-striped">
-        {% for klass in klasses %}
-            <tr>
-                <td>{{ klass.course_name }}</td>
-                <td>{{ klass.teacher_first_name }} {{ teacher.last_name }}</td>
-                <td>{{ klass.day}}</td>
-                <td>{{ klass.start_time }}</td>
-                <td>{{ klass.end_time }}</td>
-                <td><button class="btn btn-danger">Remove</button></td>
-            </tr>
-        {% endfor %}
+        {% if klasses %}
+            {% for klass in klasses %}
+                <tr>
+                    <td>{{ klass.course_name }}</td>
+                    <td>{{ klass.teacher_first_name }} {{ teacher.last_name }}</td>
+                    <td>{{ klass.day}}</td>
+                    <td>{{ klass.start_time }}</td>
+                    <td>{{ klass.end_time }}</td>
+                    <td><button class="btn btn-danger" onclick="location.href='{% url 'remove_a_class' klass.id %}'">Remove</button></td>
+                </tr>
+            {% endfor %}
+        {% else %}
+            <p class="alert alert-secondary">No classes</p>
+        {% endif %}
     </table>
 {% endblock %}
