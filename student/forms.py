@@ -31,7 +31,7 @@ class AddClassForm(forms.Form):
     course_name = forms.CharField()
     teacher_first_name = forms.CharField()
     teacher_last_name = forms.CharField()
-    day = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, choices=DAYS_OF_THE_WEEK)
+    days = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, choices=DAYS_OF_THE_WEEK)
     start_time = forms.TimeField(widget=TimeInput)
     end_time = forms.TimeField(widget=TimeInput)
 

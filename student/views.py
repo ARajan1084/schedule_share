@@ -101,22 +101,24 @@ def add_class(request):
             course_name = form.cleaned_data.get('course_name')
             teacher_first_name = form.cleaned_data.get('teacher_first_name')
             teacher_last_name = form.cleaned_data.get('teacher_last_name')
-            day = form.cleaned_data.get('day')
+            days = form.cleaned_data.get('days')
             start_time = form.cleaned_data.get('start_time')
             end_time = form.cleaned_data.get('end_time')
             existing_classes = Class.objects.all()
 
             for existing_klass in existing_classes:
-                if existing_klass.course_name == course_name and teacher_first_name == existing_klass.teacher_first_name and teacher_last_name == existing_klass.teacher_last_name and day == existing_klass.day and start_time == existing_klass.start_time and end_time == existing_klass.end_time:
+                if existing_klass.course_name == course_name and teacher_first_name == existing_klass.teacher_first_name and teacher_last_name == existing_klass.teacher_last_name and days == existing_klass.days and start_time == existing_klass.start_time and end_time == existing_klass.end_time:
                     enrollment = Enrollment(username=request.user.username, class_id=existing_klass.id)
                     enrollment.save()
                     return redirect('home')
-            klass = Class(course_name=course_name, teacher_first_name=teacher_first_name,
-                          teacher_last_name=teacher_last_name,
-                          day=day, start_time=start_time, end_time=end_time)
-            enrollment = Enrollment(username=request.user.username, class_id=klass.id)
-            klass.save()
-            enrollment.save()
+
+            for day in days:
+                klass = Class(course_name=course_name, teacher_first_name=teacher_first_name,
+                              teacher_last_name=teacher_last_name,
+                              day=day, start_time=start_time, end_time=end_time)
+                enrollment = Enrollment(username=request.user.username, class_id=klass.id)
+                klass.save()
+                enrollment.save()
         else:
             messages.error(request, 'Form is Invalid')
     return render(request, 'student/add_class.html', {'form': AddClassForm()})
