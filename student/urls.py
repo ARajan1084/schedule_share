@@ -22,6 +22,6 @@ urlpatterns = [
     path('account/create/', views.create_account, name='create_account'),
     path('class/management/add/', views.add_class, name='add_class'),
     path('class/management/remove/', views.remove_class, name='remove_class'),
-    path('class/management/remove/<str:klass_id>/', views.remove_class, name='remove_a_class'),
+    path('class/management/removeclass/<str:klass_id>/', views.remove_a_class, name='remove_a_class'),
     path('', views.home, name='home')
 ]
