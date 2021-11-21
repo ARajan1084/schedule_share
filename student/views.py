@@ -95,10 +95,10 @@ def all_availability_statuses(friendships):
         enrollments = Enrollment.objects.all().filter(username=friend)
         klasses = []
         for enrollment in enrollments:
-            klasses.append(Class.objects.all().filter(id=enrollment.class_id))
+            klasses.append(Class.objects.all().filter(id=enrollment.class_id).first())
         added_to_busy = False
         for klass in klasses:
-            if klass.start_time < current_time < klass.end_time:
+            if klass.start_time < current_time.time() < klass.end_time:
                 busy.append(student)
                 added_to_busy = True
                 break
