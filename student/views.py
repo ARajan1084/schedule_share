@@ -20,26 +20,40 @@ def home(request):
             form = SendFriendRequestForm(request.POST)
             if form.is_valid():
                 friend_username = form.cleaned_data.get('friend_username')
+                if FriendRequest.objects.all().filter(sending_student=friend_username, receiving_student=request.user.username, request_status='A').exists() or FriendRequest.objects.all().filter(sending_student=request.user.username, receiving_student=friend_username, request_status='A').exists():
+                    messages.error(request, 'You are already friends with this person!')
+                    return redirect('home')
+                if FriendRequest.objects.all().filter(sending_student=friend_username, receiving_student=request.user.username, request_status='U').exists():
+                    messages.error(request, 'You may not send a friend request to this person because you have a pending friend request from them. To add them as a friend, accept the request that they have sent you.')
+                    return redirect('home')
+                if FriendRequest.objects.all().filter(sending_student=request.user.username, receiving_student=friend_username).exists(): # If friend req is rejected or unknown
+                    messages.error(request, 'You have already sent this person a friend request before.')
+                    return redirect('home')
                 if request.user.username == friend_username:
                     messages.error(request, 'You cannot send friend requests to yourself')
+                    return redirect('home')
                 # friend = Student.objects.get(user=User.objects.get(username=friend_username))
                 friend_does_exist = False
                 for user in User.objects.all():
                     if user.username == friend_username:
                         friend_does_exist = True
                 if friend_does_exist:
-                    friend_request = FriendRequest(sending_student=request.user.username, receiving_student=friend_username,
+                    friend_request = FriendRequest(sending_student=request.user.username,
+                                                   receiving_student=friend_username,
                                                    request_status='U')
                     friend_request.save()
                 else:
                     messages.error(request, 'Friend does not exist')
+                    return redirect('home')
             else:
                 messages.error(request, 'Form is Invalid')
         elif 'accept_fr' in request.POST:
             friend_username = request.POST['accept_fr']
-            friendship = Friendship(first_student_username=request.user.username, second_student_username=friend_username)
+            friendship = Friendship(first_student_username=request.user.username,
+                                    second_student_username=friend_username)
             friendship.save()
-            fr = FriendRequest.objects.all().get(sending_student=friend_username, receiving_student=request.user.username)
+            fr = FriendRequest.objects.all().get(sending_student=friend_username,
+                                                 receiving_student=request.user.username)
             fr.request_status = 'A'
             fr.save()
             return redirect('home')
@@ -104,24 +118,40 @@ def add_class(request):
             days = form.cleaned_data.get('days')
             start_time = form.cleaned_data.get('start_time')
             end_time = form.cleaned_data.get('end_time')
-            existing_classes = Class.objects.all()
 
-            for existing_klass in existing_classes:
-                if existing_klass.course_name == course_name and teacher_first_name == existing_klass.teacher_first_name and teacher_last_name == existing_klass.teacher_last_name and days == existing_klass.days and start_time == existing_klass.start_time and end_time == existing_klass.end_time:
-                    enrollment = Enrollment(username=request.user.username, class_id=existing_klass.id)
-                    enrollment.save()
-                    return redirect('home')
+            if start_time == end_time:
+                messages.error(request, 'Start time cannot be equal to end time.')
+                return redirect('add_class')
+            elif start_time > end_time:
+                messages.error(request, 'Start time cannot be greater than end time.')
+                return redirect('add_class')
 
             for day in days:
-                klass = Class(course_name=course_name, teacher_first_name=teacher_first_name,
-                              teacher_last_name=teacher_last_name,
-                              day=day, start_time=start_time, end_time=end_time)
-                enrollment = Enrollment(username=request.user.username, class_id=klass.id)
-                klass.save()
-                enrollment.save()
+                existing_klass = Class.objects.all().filter(course_name=course_name, teacher_first_name=teacher_first_name, teacher_last_name=teacher_last_name, day=day, start_time=start_time, end_time=end_time).first()
+                if existing_klass is not None:
+                    if has_already_enrolled(username=request.user.username, class_id=existing_klass.id):
+                        messages.error(request, 'You have already enrolled for this class.')
+                        return redirect('add_class')
+                    enrollment = Enrollment(username=request.user.username, class_id=existing_klass.id)
+                    enrollment.save()
+                else:
+                    klass = Class(course_name=course_name, teacher_first_name=teacher_first_name,
+                                  teacher_last_name=teacher_last_name,
+                                  day=day, start_time=start_time, end_time=end_time)
+                    if has_already_enrolled(username=request.user.username, class_id=klass.id):
+                        messages.error(request, 'You have already enrolled for this class.')
+                        return redirect('add_class')
+                    enrollment = Enrollment(username=request.user.username, class_id=klass.id)
+                    klass.save()
+                    enrollment.save()
+            messages.success(request, 'Class Added Successfully.')
         else:
             messages.error(request, 'Form is Invalid')
     return render(request, 'student/add_class.html', {'form': AddClassForm()})
+
+
+def has_already_enrolled(username, class_id):
+    return Enrollment.objects.all().filter(username=username, class_id=class_id).exists()
 
 
 @authentication_required
