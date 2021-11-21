@@ -6,6 +6,9 @@
 {% block body %}
     <div class="container">
         <div class="row pt-3">
+            {% for message in messages %}
+                <p class="alert alert-danger">{{ message }}</p>
+            {% endfor %}
             <div class="col-lg-8">
                 <h2>Available</h2>
                 {% if available_friends %}
