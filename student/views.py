@@ -166,7 +166,8 @@ def remove_class(request):
 
 
 def remove_a_class(request, class_id):
-    return render(request, 'student/home.html')
+    Enrollment.objects.all().get(class_id=class_id).delete()
+    return redirect('remove_class')
 
 
 def login(request):
