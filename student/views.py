@@ -161,7 +161,7 @@ def remove_class(request):
     enrollments = Enrollment.objects.all().filter(username=request.user.username)
     klasses = []
     for enrollment in enrollments:
-        klasses.append(Class.objects.all().get(id=enrollment.klass_id))
+        klasses.append(Class.objects.all().get(id=enrollment.class_id))
     return render(request, 'student/remove_class.html', {'klasses': klasses})
 
 
