@@ -167,7 +167,7 @@ def remove_class(request):
 
 # do we need authentication
 def remove_a_class(request, klass_id):
-    Enrollment.objects.all().get(class_id=klass_id).delete()
+    Enrollment.objects.all().get(class_id=klass_id, username=request.user.username).delete()
     return redirect('remove_class')
 
 
