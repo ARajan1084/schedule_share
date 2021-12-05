@@ -126,8 +126,10 @@ def add_class(request):
                 messages.error(request, 'Start time cannot be greater than end time.')
                 return redirect('add_class')
 
+            student_school = Student.objects.get(user=User.objects.get(username=request.user.username)).school
+
             for day in days:
-                existing_klass = Class.objects.all().filter(course_name=course_name, teacher_first_name=teacher_first_name, teacher_last_name=teacher_last_name, day=day, start_time=start_time, end_time=end_time).first()
+                existing_klass = Class.objects.all().filter(course_name=course_name, teacher_first_name=teacher_first_name, teacher_last_name=teacher_last_name, day=day, start_time=start_time, end_time=end_time, school=student_school).first()
                 if existing_klass is not None:
                     if has_already_enrolled(username=request.user.username, class_id=existing_klass.id):
                         messages.error(request, 'You have already enrolled for this class.')
@@ -137,7 +139,7 @@ def add_class(request):
                 else:
                     klass = Class(course_name=course_name, teacher_first_name=teacher_first_name,
                                   teacher_last_name=teacher_last_name,
-                                  day=day, start_time=start_time, end_time=end_time)
+                                  day=day, start_time=start_time, end_time=end_time, school=student_school)
                     if has_already_enrolled(username=request.user.username, class_id=klass.id):
                         messages.error(request, 'You have already enrolled for this class.')
                         return redirect('add_class')
@@ -195,13 +197,14 @@ def create_account(request):
             first_name = form.cleaned_data.get('first_name')
             last_name = form.cleaned_data.get('last_name')
             email = form.cleaned_data.get('email')
+            school = form.cleaned_data.get('school')
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
             confirm_password = form.cleaned_data.get('confirm_password')
             if password == confirm_password:
                 user = User(username=username, email=email)
                 user.set_password(password)
-                student = Student(user=user, first_name=first_name, last_name=last_name)
+                student = Student(user=user, first_name=first_name, last_name=last_name, school=school)
                 try:
                     user.save()
                     student.save()
