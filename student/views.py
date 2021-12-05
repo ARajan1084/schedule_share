@@ -43,7 +43,7 @@ def home(request):
                                                    request_status='U')
                     friend_request.save()
                 else:
-                    messages.error(request, 'Friend does not exist')
+                    messages.error(request, 'User does not exist')
                     return redirect('home')
             else:
                 messages.error(request, 'Form is Invalid')
