@@ -8,6 +8,7 @@ class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
     first_name = models.CharField(max_length=30, unique=False, null=False)
     last_name = models.CharField(max_length=50, unique=False, null=False)
+    school = models.CharField(max_length=50, unique=False, null=False)
 
     class Meta:
         db_table = 'students'
@@ -22,6 +23,7 @@ class Class(models.Model):
     day = models.IntegerField(unique=False, null=False)
     start_time = models.TimeField(unique=False, null=False)
     end_time = models.TimeField(unique=False, null=False)
+    school = models.CharField(max_length=50, unique=False, null=False)
 
     class Meta:
         db_table = 'classes'
