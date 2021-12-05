@@ -164,7 +164,7 @@ def remove_class(request):
         klasses.append(Class.objects.all().get(id=enrollment.class_id))
     return render(request, 'student/remove_class.html', {'klasses': klasses})
 
-
+# do we need authentication
 def remove_a_class(request, class_id):
     Enrollment.objects.all().get(class_id=class_id).delete()
     return redirect('remove_class')
