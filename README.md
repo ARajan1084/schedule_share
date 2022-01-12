@@ -9,11 +9,11 @@ ScheduleShare is a REST API app that can
 
 What's used:
 - Python
-  - Django
+- Django
 - HTML
 - CSS
   - Bootstrap
-- SQL
 - JavaScript
+- SQL
 
 Developed by Yash Mishra and Achintya Rajan.
