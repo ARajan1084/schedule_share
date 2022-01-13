@@ -1,3 +1,4 @@
+import pytz
 from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.shortcuts import render, redirect
@@ -9,7 +10,7 @@ from django.contrib.auth.models import User
 from student.models import Student, FriendRequest, Friendship, Class, Enrollment
 import datetime
 
-
+#make sure schools are same so no timezone issues
 @authentication_required
 def home(request):
     if request.user is None:
@@ -23,6 +24,7 @@ def home(request):
             form = Simulate(request.POST)
             if form.is_valid():
                 time = form.cleaned_data.get('time')
+                statuses = all_availability_statuses(friendships, time)
                 hour = int(str(time)[0:2])
                 ending = 'AM'
                 if hour == 0:
@@ -33,8 +35,6 @@ def home(request):
                     hour -= 12
                     ending = 'PM'
                 time_report = str(hour) + str(time)[2:5]
-                statuses = all_availability_statuses(friendships,
-                                                     datetime.datetime.strptime(time_report + ':00', '%H:%M:%S'))
                 time_report += ' ' + ending
                 messages.success(request, 'Time being simulated: ' + time_report)
                 available_friends = statuses[0]
@@ -104,8 +104,7 @@ def home(request):
             fr.save()
             return redirect('home')
 
-    time_for_availability_statuses = datetime.datetime.now()
-    statuses = all_availability_statuses(friendships, time_for_availability_statuses)
+    statuses = all_availability_statuses(friendships, datetime.datetime.now(tz=pytz.timezone('US/Pacific')).time())
     available_friends = statuses[0]
     busy_friends = statuses[1]
     return render(request, 'student/home.html', {'unknown_friend_requests': unknown_friend_requests,
@@ -136,7 +135,9 @@ def all_availability_statuses(friendships, time):
             klasses.append(Class.objects.all().filter(id=enrollment.class_id).first())
         added_to_busy = False
         for klass in klasses:
-            if klass.start_time < time.time() < klass.end_time:
+            print("klass.start_time is " + str(klass.start_time))
+            print("time.time() is " + str(time))
+            if klass.start_time < time < klass.end_time:
                 busy.append(student)
                 added_to_busy = True
                 break
