@@ -1,0 +1,23 @@
+{% extends 'student/base.html' %}
+{% load static %}
+
+{% block title %}{% endblock %}
+    <div class="container">
+        <div class="row">
+            {% for course in courses %}
+                <div class="card">
+                    <p>{{ course }}</p>
+                    <button class="btn btn-outline-light" onclick="location.href='{% url 'home' %}'">Create Study Group</button>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="row">
+            {% for chat in chats %}
+                <div class="card">
+                    <p>{{ chat }}</p>
+                    <button class="btn btn-outline-light" onclick="localation.href='{% url 'home' %}'">Open Chat</button>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% block body %}{% endblock %}
