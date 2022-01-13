@@ -39,3 +39,7 @@ class AddClassForm(forms.Form):
 
 class SendFriendRequestForm(forms.Form):
     friend_username = forms.CharField()
+
+
+class Simulate(forms.Form):
+    time = forms.TimeField(widget=TimeInput)

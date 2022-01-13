@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 from django.shortcuts import render, redirect
 
 from student.decorators import authentication_required
-from student.forms import UserLoginForm, AddClassForm, SendFriendRequestForm
+from student.forms import UserLoginForm, AddClassForm, SendFriendRequestForm, Simulate
 from student.forms import CreateAccountForm
 from django.contrib.auth.models import User
 from student.models import Student, FriendRequest, Friendship, Class, Enrollment
@@ -15,18 +15,57 @@ def home(request):
     if request.user is None:
         return redirect('login')
     # student = Student.objects.all().get(user=user)
+    unknown_friend_requests = FriendRequest.objects.all().filter(receiving_student=request.user.username,
+                                                                 request_status='U')
+    friendships = fetch_friendships(request.user.username)
     if request.method == 'POST':
-        if 'send_friend_request' in request.POST:
+        if 'simulate' in request.POST:
+            form = Simulate(request.POST)
+            if form.is_valid():
+                time = form.cleaned_data.get('time')
+                hour = int(str(time)[0:2])
+                ending = 'AM'
+                if hour == 0:
+                    hour += 12
+                elif hour == 12:
+                    ending = 'PM'
+                elif hour > 12:
+                    hour -= 12
+                    ending = 'PM'
+                time_report = str(hour) + str(time)[2:5]
+                statuses = all_availability_statuses(friendships,
+                                                     datetime.datetime.strptime(time_report + ':00', '%H:%M:%S'))
+                time_report += ' ' + ending
+                messages.success(request, 'Time being simulated: ' + time_report)
+                available_friends = statuses[0]
+                busy_friends = statuses[1]
+                return render(request, 'student/home.html', {'unknown_friend_requests': unknown_friend_requests,
+                                                             'friendships': friendships,
+                                                             'friend_request_form': SendFriendRequestForm(),
+                                                             'available_friends': available_friends,
+                                                             'busy_friends': busy_friends,
+                                                             'availability_form': Simulate()})
+            else:
+                messages.error(request, 'Form is Invalid')
+        elif 'send_friend_request' in request.POST:
             form = SendFriendRequestForm(request.POST)
             if form.is_valid():
                 friend_username = form.cleaned_data.get('friend_username')
-                if FriendRequest.objects.all().filter(sending_student=friend_username, receiving_student=request.user.username, request_status='A').exists() or FriendRequest.objects.all().filter(sending_student=request.user.username, receiving_student=friend_username, request_status='A').exists():
+                if FriendRequest.objects.all().filter(sending_student=friend_username,
+                                                      receiving_student=request.user.username,
+                                                      request_status='A').exists() or FriendRequest.objects.all().filter(
+                        sending_student=request.user.username, receiving_student=friend_username,
+                        request_status='A').exists():
                     messages.error(request, 'You are already friends with this person!')
                     return redirect('home')
-                if FriendRequest.objects.all().filter(sending_student=friend_username, receiving_student=request.user.username, request_status='U').exists():
-                    messages.error(request, 'You may not send a friend request to this person because you have a pending friend request from them. To add them as a friend, accept the request that they have sent you.')
+                if FriendRequest.objects.all().filter(sending_student=friend_username,
+                                                      receiving_student=request.user.username,
+                                                      request_status='U').exists():
+                    messages.error(request,
+                                   'You may not send a friend request to this person because you have a pending friend request from them. To add them as a friend, accept the request that they have sent you.')
                     return redirect('home')
-                if FriendRequest.objects.all().filter(sending_student=request.user.username, receiving_student=friend_username).exists(): # If friend req is rejected or unknown
+                if FriendRequest.objects.all().filter(sending_student=request.user.username,
+                                                      receiving_student=friend_username).exists():  # If friend req is rejected or unknown
                     messages.error(request, 'You have already sent this person a friend request before.')
                     return redirect('home')
                 if request.user.username == friend_username:
@@ -64,17 +103,17 @@ def home(request):
             fr.request_status = 'R'
             fr.save()
             return redirect('home')
-    unknown_friend_requests = FriendRequest.objects.all().filter(receiving_student=request.user.username,
-                                                                 request_status='U')
-    friendships = fetch_friendships(request.user.username)
-    statuses = all_availability_statuses(friendships)
+
+    time_for_availability_statuses = datetime.datetime.now()
+    statuses = all_availability_statuses(friendships, time_for_availability_statuses)
     available_friends = statuses[0]
     busy_friends = statuses[1]
     return render(request, 'student/home.html', {'unknown_friend_requests': unknown_friend_requests,
                                                  'friendships': friendships,
                                                  'friend_request_form': SendFriendRequestForm(),
                                                  'available_friends': available_friends,
-                                                 'busy_friends': busy_friends})
+                                                 'busy_friends': busy_friends,
+                                                 'availability_form': Simulate()})
 
 
 def fetch_friendships(username):
@@ -86,8 +125,7 @@ def fetch_friendships(username):
     return friends
 
 
-def all_availability_statuses(friendships):
-    current_time = datetime.datetime.now()
+def all_availability_statuses(friendships, time):
     busy = []
     free = []
     for friend in friendships:
@@ -98,7 +136,7 @@ def all_availability_statuses(friendships):
             klasses.append(Class.objects.all().filter(id=enrollment.class_id).first())
         added_to_busy = False
         for klass in klasses:
-            if klass.start_time < current_time.time() < klass.end_time:
+            if klass.start_time < time.time() < klass.end_time:
                 busy.append(student)
                 added_to_busy = True
                 break
@@ -129,7 +167,11 @@ def add_class(request):
             student_school = Student.objects.get(user=User.objects.get(username=request.user.username)).school
 
             for day in days:
-                existing_klass = Class.objects.all().filter(course_name=course_name, teacher_first_name=teacher_first_name, teacher_last_name=teacher_last_name, day=day, start_time=start_time, end_time=end_time, school=student_school).first()
+                existing_klass = Class.objects.all().filter(course_name=course_name,
+                                                            teacher_first_name=teacher_first_name,
+                                                            teacher_last_name=teacher_last_name, day=day,
+                                                            start_time=start_time, end_time=end_time,
+                                                            school=student_school).first()
                 if existing_klass is not None:
                     if has_already_enrolled(username=request.user.username, class_id=existing_klass.id):
                         messages.error(request, 'You have already enrolled for this class.')
