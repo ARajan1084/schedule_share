@@ -114,6 +114,27 @@ def home(request):
                                                  'busy_friends': busy_friends,
                                                  'availability_form': Simulate()})
 
+def study_groups(request):
+    if request.method == 'POST':
+        class_id = request.POST['class_id']
+        study_group = StudyGroup(name=Class.objects.all().get(id=class_id))
+        study_group.save()
+        study_group_member = StudyGroupMember(student_username=request.user.username, study_group_id=study_group.id)
+        study_group_member.save()
+        friendships = fetch_friendships(request.user.username)
+        for friend in friendships:
+            if Enrollment.objects.filter(username=friend, class_id=class_id).exists():
+                study_group_member = StudyGroupMember(student_username=friend, study_group_id=study_group.id)
+                study_group_member.save()
+    courses = fetch_enrolled_courses(request.user.username)
+    return render(request, 'student/study_groups.html', context={'courses': courses})
+
+
+def fetch_enrolled_courses(username):
+    klasses = []
+    for enrollment in Enrollment.objects.all().filter(username=username):
+        klasses.append(Class.objects.all().filter(id=enrollment.class_id).first())
+    return klasses
 
 def fetch_friendships(username):
     friends = []
