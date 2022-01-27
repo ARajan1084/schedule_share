@@ -2,12 +2,17 @@
 {% load static %}
 
 {% block title %}{% endblock %}
+{% block body %}
     <div class="container">
-        <div class="row">
+        <div class="row pt-5">
             {% for course in courses %}
-                <div class="card">
-                    <p>{{ course }}</p>
-                    <button class="btn btn-outline-light" onclick="location.href='{% url 'home' %}'">Create Study Group</button>
+                <div class="col-lg-3">
+                    <div class="card">
+                        <h3 class="card-header">{{ course.course_name }}</h3>
+                        <div class="card-body">
+                            <button class="btn btn-dark" onclick="location.href='{% url 'home' %}'">Create Study Group</button>
+                        </div>
+                    </div>
                 </div>
             {% endfor %}
         </div>
@@ -15,9 +20,9 @@
             {% for chat in chats %}
                 <div class="card">
                     <p>{{ chat }}</p>
-                    <button class="btn btn-outline-light" onclick="localation.href='{% url 'home' %}'">Open Chat</button>
+                    <button class="btn btn-light" onclick="location.href='{% url 'home' %}'">Open Chat</button>
                 </div>
             {% endfor %}
         </div>
     </div>
-{% block body %}{% endblock %}
+{% endblock %}

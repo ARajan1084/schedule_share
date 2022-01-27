@@ -29,6 +29,34 @@ class Class(models.Model):
         db_table = 'classes'
 
 
+class StudyGroup(models.Model):
+    id = models.UUIDField(default=uuid.uuid4, primary_key=True, null=False)
+    name = models.CharField(max_length=50, unique=False)
+    media_id = models.UUIDField(default=uuid.uuid4, primary_key=False, null=False, unique=False)
+
+    class Meta:
+        db_table = 'study_groups'
+
+
+class StudyGroupMember(models.Model):
+    student_username = models.CharField(max_length=10, unique=False)
+    study_group_id = models.UUIDField(unique=False)
+
+    class Meta:
+        db_table = 'study_group_members'
+
+
+class StudyGroupMessage(models.Model):
+    id = models.UUIDField(default=uuid.uuid4, primary_key=True, null=False)
+    study_group_id = models.UUIDField(unique=False, primary_key=False)
+    sender = models.UUIDField(unique=False, null=False)
+    message = models.CharField(max_length=200, primary_key=False, unique=False, null=False)
+    reply_to = models.UUIDField(primary_key=False, null=True, default=None)
+
+    class Meta:
+        db_table = 'study_group_messages'
+
+
 class Friendship(models.Model):
     # student can have multiple Friendships, and each Friendship involves multiple (specifically: 2) students
     first_student_username = models.CharField(max_length=10, unique=False, null=False)
