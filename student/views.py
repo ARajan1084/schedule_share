@@ -7,7 +7,7 @@ from student.decorators import authentication_required
 from student.forms import UserLoginForm, AddClassForm, SendFriendRequestForm, Simulate
 from student.forms import CreateAccountForm
 from django.contrib.auth.models import User
-from student.models import Student, FriendRequest, Friendship, Class, Enrollment
+from student.models import Student, FriendRequest, Friendship, Class, Enrollment, StudyGroup
 import datetime
 
 #make sure schools are same so no timezone issues
