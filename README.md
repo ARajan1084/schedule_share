@@ -1,7 +1,7 @@
 # schedule_share
 Work In Progress!
 See beta version: https://schedule-share-production.herokuapp.com/
-- Note: beta version on Heroku is based on older version of app and does not contain bug fixes and newly added features
+- **Note**: beta version on Heroku is based on older version of app and does not contain bug fixes and newly added features such as viewing lists of busy and free friends for any inputted time of the day
 
 ScheduleShare is a REST API app that can:
 - Make sharing your schedules with every new classmate you meet extremely easy and fast. All you need is to send a friend request to their username!
