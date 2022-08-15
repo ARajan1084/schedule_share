@@ -3,6 +3,7 @@ Work In Progress!
 See **beta** version: https://schedule-share-production.herokuapp.com/
 - **NOTE**: it may take a few extra seconds for the webpage to load for the first time you open it because of Heroku's server resource management
 - **NOTE**: the code in this repo and the beta version on Heroku may not always be for the same version of the app
+- **NOTE**: when simulating if your friends are busy/free at specific time, the exact start and end time is excluded. For example, if your friend has an class that ends at 5:15, they will be marked 'busy' at 5:14 (and earlier) and 'free' at 5:15 (and later).
 
 ScheduleShare is a REST API app that can:
 - Make sharing your schedules with every new classmate you meet extremely easy and fast. All you need is to send a friend request to their username!
