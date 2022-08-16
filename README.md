@@ -1,5 +1,4 @@
 # schedule_share
-Work In Progress!
 See **beta** version: https://schedule-share-production.herokuapp.com/
 
 - **NOTE**: it may take a few extra seconds for the webpage to load for the first time you open it because of Heroku's server resource management
@@ -22,6 +21,5 @@ What's used:
 - CSS
   - Bootstrap
 - JavaScript
-- SQL
 
 Developed by Yash Mishra and Achintya Rajan.
