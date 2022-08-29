@@ -6,7 +6,7 @@ See **beta** version: https://schedule-share-production.herokuapp.com/
 
 <img width="1785" alt="image" src="https://user-images.githubusercontent.com/61370209/184695649-ae5ae57f-51a6-4f3b-9aba-b991e3d7502a.png">
 <img width="1784" alt="image" src="https://user-images.githubusercontent.com/61370209/184697103-5ad33dca-0edd-4dae-843b-3ece31e0a883.png">
-<img width="1773" alt="image" src="https://user-images.githubusercontent.com/61370209/184697151-25af1fdb-aaba-46f7-b1d6-cfa323c9c765.png">
+<img width="1773" alt="image" src="https://user-images.githubusercontent.com/61370209/187268151-d555196e-9b5b-4cb5-bc2d-13ed12016941.png">
 
 ScheduleShare is a REST API app that can:
 - Make sharing your schedules with every new classmate you meet extremely easy and fast. All you need is to send a friend request to their username!
