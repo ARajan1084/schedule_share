@@ -1,8 +1,4 @@
 # schedule_share
-See **beta** version: https://schedule-share-production.herokuapp.com/
-
-- **NOTE**: it may take a few extra seconds for the webpage to load for the first time you open it because of Heroku's server resource management
-- **NOTE**: when simulating if your friends are busy/free at specific time, the exact start and end time is excluded. For example, if your friend has an class that ends at 5:15, they will be marked 'busy' at 5:14 (and earlier) and 'free' at 5:15 (and later).
 
 <img width="1785" alt="image" src="https://user-images.githubusercontent.com/61370209/184695649-ae5ae57f-51a6-4f3b-9aba-b991e3d7502a.png">
 <img width="1784" alt="image" src="https://user-images.githubusercontent.com/61370209/184697103-5ad33dca-0edd-4dae-843b-3ece31e0a883.png">
