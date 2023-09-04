@@ -1,4 +1,4 @@
-# schedule_share
+# Schedule Buddy
 
 <img width="1785" alt="image" src="https://user-images.githubusercontent.com/61370209/184695649-ae5ae57f-51a6-4f3b-9aba-b991e3d7502a.png">
 <img width="1784" alt="image" src="https://user-images.githubusercontent.com/61370209/184697103-5ad33dca-0edd-4dae-843b-3ece31e0a883.png">
